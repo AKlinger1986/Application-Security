@@ -1,55 +1,73 @@
 from spellchecker import SpellChecker
+from contextlib import suppress
 import easygui
+import sys
 
-# Set 
-#msg 	= "Select the file you would like to spellcheck."
-#title 	= "File Selection" 
-#default   = "*.txt"
-#filetypes = "*.txt"
-#multiple  = "False"
+try:
+	# Set default variable contents
+	fileType      = ".txt"
+	fileEnd       = "*"+fileType
+	spellChecker  = SpellChecker()
 
-spellChecker = SpellChecker()
+	# Create pop-up for file selection.
+	#filePathList = "MyWords.txt"   
+	filePathList = easygui.fileopenbox("Select the "+fileType+" file you would like to spellcheck.",
+	"Adam Klinger's File Spell Checker",fileEnd,fileEnd,"False")
 
-spellFile = ""
-# Create pop-up for file selection.
-#spellFile    = "MyWords.txt"   
-spellFile = easygui.fileopenbox("Select the .txt file you would like to spellcheck.",
-"Adam's Text File Spell Checker","*.txt","*.txt","False")
+	#Convert to String
+	with suppress(TypeError):	
+		filePathStr = ''.join(filePathList)
 
-if (spellFile == None):
-	print("")
-	print("** No file has been selected to spellcheck! Aborting. **")
+	#Check that a file was selected
+	if (filePathList == None):
+		print("\n**Error! No file has been selected to spellcheck! Aborting. **")	
+		sys.exit()
+		
+	#Check that the file extension is correct
+	elif (filePathStr.endswith(fileType) == False):
+		print("Selected file: "+filePathStr)
+		print("\n** Invalid file extension! Only "+fileType+" is supported. Aborting. **") 
 
-else:
-	print("")
-	print("Analyzing File "+ str(spellFile))
-	print("")
-	# Read the file into an array
-	file = open(''.join(spellFile),"r")
-	fileContents = file.read().split(' ')
-	file.close()
+	#Process the file	
+	else:
+		print("\nAnalyzing File: "+ filePathStr+"\n")
+		
+		# Read the file into an array
+		file = open(filePathStr,"r")
+		fileContentList = file.read().split(' ')
+		file.close()
+		
+		#Print File Contents
+		print("File Contents: ")
+		print(fileContentList)
+		print("\n")
+		
+		#Check that file is not blank and only contains characters
+		fileContentsStr = ''.join(fileContentList)
+		if( (fileContentsStr).isalpha() == False):
+			print("** Error! File contains non alpha characters. Aborting.. **\n")
+			sys.exit()
+		
+		# Check for misspellings
+		misspelled = spellChecker.unknown(fileContentList)
 
-	# Check for misspellings
-	misspelled = spellChecker.unknown(fileContents)
+		# Compute counts
+		wordTotal = len(fileContentList)
+		wordTypo  = len(misspelled)
+		percTypo  = "{:.1%}".format(wordTypo/wordTotal)
 
-	# Compute counts
-	wordTotal = len(fileContents)
-	wordTypo  = len(misspelled)
-	percTypo  = "{:.1%}".format(wordTypo/wordTotal)
+		print("Total words:      "+str(wordTotal) )
+		print("Misspelled words: "+str(wordTypo) )
+		print("=============================")
+		print("Percentage Misspelled: "+ str(percTypo)+"\n")
 
-	print("")
-	print("Total words:      "+str(wordTotal) )
-	print("Misspelled words: "+str(wordTypo) )
-	print("=============================")
-	print("Percentage Misspelled: "+ str(percTypo) )
-	print("")
-
-	# Display misspelled words and possible corrections
-	for word in misspelled:
-		print(" ")
-		print("Word misspelled:     "+ word)
-		print("Possible correction: "+ spellChecker.correction(word))
-		#print(spellChecker.correction(word))
-		#print(spellChecker.candidates(word))
-		#.
-	#print(file.read())
+		# Display misspelled words and possible corrections
+		for word in misspelled:
+			print("\nWord misspelled:     "+ word)
+			print("Possible correction: "+ spellChecker.correction(word))
+			#print(spellChecker.correction(word))
+			#print(spellChecker.candidates(word))
+			#.
+		#print(file.read())
+except:
+	raise
