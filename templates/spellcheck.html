@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<center>
+
+
+<form action="/spellcheck" method="POST">
+Select a File to SpellCheck or Logout
+<input type="submit" name="OpenFile" value="Select File">
+<input type="submit" name="Logout"   value="Logout"><br><br><br><br>
+ 
+ {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}  <br><br>
+ {% endif %}
+     
+ {% if contentList %}
+	<strong> File Contents: </strong> {{ contentList }}  <br><br>
+ {% endif %}
+
+ {% if typoList %}
+	<strong> Spelling Corrections: </strong> {{ typoList }} <br><br><br><br>
+ {% endif %}
+ 
+ {% if totalCount %}
+	<strong> Total Words: </strong> {{ totalCount }} <br>
+ {% endif %}
+
+ {% if typoCount %}
+	<strong> Total Typos: </strong> {{ typoCount }} <br>
+ {% endif %}	
+
+ {% if typoPercent %}
+	<strong> Typo Percent: </strong> {{ typoPercent }} <br>
+ {% endif %}	
+	
+ <!--<pre>{{ content }}</pre>-->
+
+<!--<input type="submit" name="close" value="Close"> -->
+<!--<button id="myButton">Select file to spellcheck</button>--> 
+</form></center>

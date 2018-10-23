@@ -1,0 +1,22 @@
+<center>Welcome to Adam's Spell Checker Program. Please authenticate to continue.</center></br>
+
+{% block body %}
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+
+<form action="/login" method="POST"><center>
+  <input type="username" name="username" placeholder="Username">
+  <input type="password" name="password" placeholder="Password">
+  <input type="submit" name="Login"  value="Login">
+  <input type="submit" name="Register" value="Register">
+  <br><br>
+  
+ {% if error %}
+    <p class=error><strong>{{ error }} </strong> 
+ {% endif %}
+   
+</form></center>
+
+{% endif %}
+{% endblock %}
