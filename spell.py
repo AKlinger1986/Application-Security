@@ -4,28 +4,17 @@ from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-
-from sqlalchemy.orm import *
-from spellchecker import SpellChecker
-from sqlalchemy import *
-from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Date, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from tabledef import *
 
 import os
 import easygui
 import re
-import sqlalchemy.dialects.sqlite
 
 @app.route("/")
 def home():
-	#session['logged_in'] = True
-	
 	# Display login page if user is not authenticated
 	if not session.get('logged_in'):
 		return render_template('login.html')
-		
 	# Display spellchecker page once authenticated
 	else:
 		return render_template('spellcheck.html')
@@ -35,16 +24,18 @@ def home():
 def do_Login():
 	error = None
 
-	#Obtain values from form
+	#Obtain values from form and build User object
 	username = request.form['username']
-	password = request.form['password']
-		
+	password = request.form['password']	
 	user = User(username,password)
 	
 	if "Login" in request.form:
-		if User.authenticate(username, password):
+		#Check to see if the username and password exist in the database and match
+		if User.authUser(username, password):
 			session['logged_in'] = True
 			return home()
+		else:
+			return render_template('login.html', error='Error! Invalid username or password.')
 
 	elif "Register" in request.form:			
 		# Validate that the Username  contains only Alphanumeric characters
@@ -59,7 +50,7 @@ def do_Login():
 			return render_template('login.html', error=errorMsg)
 		
 		#Check to make sure the Username does not already exist
-		if (username_Check(username)) == False:				
+		if User.checkUser(username):				
 			db.session.add(user)
 			db.session.commit()
 			return render_template('login.html', error='Username '+username+' successfully registered.')
@@ -130,15 +121,6 @@ def do_spellCheck():
 		pass
 	return 
 	
-def username_Check(POST_USERNAME):
-	query = s.query(User).filter(User.username.in_([POST_USERNAME]))
-	result = query.first()
-	print(result)
-	if result:
-		return True
-	else:
-		return False
-
 def password_Quality_Check(POST_PASSWORD):
 	errorMsg = ("Password Rules not met. Length must be between 8-20 and contain at least"
 		        " one Uppercase [A-Z], one Lowercase [a-z], one Number [0-9], "  
@@ -162,5 +144,7 @@ def password_Quality_Check(POST_PASSWORD):
 		
 if __name__ == "__main__":
 	app.secret_key = os.urandom(12)
-	app.run(host='0.0.0.0', port=4000, debug=True)
-    #app.run(host='0.0.0.0', port=4000,ssl_context='adhoc',debug=True)
+	app.run(host='localhost', port=4000, ssl_context='adhoc',debug=True)
+	#app.run(host='0.0.0.0', port=4000, debug=True)
+
+	
