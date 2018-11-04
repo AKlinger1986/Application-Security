@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import *
 from sqlalchemy.orm import *
 from sqlalchemy.dialects.sqlite import *
 
-from flask import Flask 
+from flask import Flask
+from flask_wtf import CSRFProtect 
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -18,6 +19,11 @@ bcrypt = Bcrypt()
 	
 # Define app with database
 app = Flask(__name__)
+
+# Protect from Cross-Site Request Forgery
+csrf = CSRFProtect(app)
+csrf.init_app(app)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = dbLocation
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = debug
 

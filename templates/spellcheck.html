@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-
 <center>
 
-
 <form action="/spellcheck" method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 Select a File to SpellCheck or Logout
 <input type="submit" name="OpenFile" value="Select File">
 <input type="submit" name="Logout"   value="Logout"><br><br><br><br>

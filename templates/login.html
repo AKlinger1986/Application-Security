@@ -6,6 +6,7 @@
 {% else %}
 
 <form action="/login" method="POST"><center>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <input type="username" name="username" placeholder="Username">
   <input type="password" name="password" placeholder="Password">
   <input type="submit" name="Login"  value="Login">
